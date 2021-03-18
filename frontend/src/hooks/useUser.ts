@@ -5,10 +5,11 @@ import {
   useLogoutMutation,
   useMeQuery,
 } from "../generated/graphql";
+import isServer from "../utils/isServer";
 
 export default function useUser() {
   const { user, setUser, setIsLogin, isLogin } = useContext(UserContext);
-  const [{ data, fetching }] = useMeQuery();
+  const [{ data, fetching }] = useMeQuery({ pause: isServer() });
   const login = useLoginMutation()[1];
   const [{ fetching: logoutInProgress }, logout] = useLogoutMutation();
 

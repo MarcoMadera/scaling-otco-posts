@@ -5,15 +5,17 @@ import Wrapper from "../components/Wrapper";
 import { toErrorMap } from "../utils/toErrorMap";
 import { useRouter } from "next/router";
 import useUser from "../hooks/useUser";
+import { withUrqlClient } from "next-urql";
+import createUrqlClient from "../utils/createUrqlClient";
 
-export default function LoginPage() {
+export default withUrqlClient(createUrqlClient)(function LoginPage() {
   const router = useRouter();
   const { login } = useUser();
   return (
     <Formik
-      initialValues={{ username: "", password: "" }}
-      onSubmit={async ({ username, password }, { setErrors }) => {
-        const res = await login({ username, password });
+      initialValues={{ usernameOrEmail: "", password: "" }}
+      onSubmit={async (values, { setErrors }) => {
+        const res = await login(values);
         if (res.data?.login.errors) {
           setErrors(toErrorMap(res.data.login.errors));
         } else if (res.data?.login.user) {
@@ -26,9 +28,9 @@ export default function LoginPage() {
           <Wrapper variantSize="small">
             <Form>
               <InputField
-                name="username"
-                placeholder="username"
-                label="Username"
+                name="usernameOrEmail"
+                placeholder="username or email"
+                label="Username or Email"
               />
               <InputField
                 name="password"
@@ -51,4 +53,4 @@ export default function LoginPage() {
       }}
     </Formik>
   );
-}
+});
